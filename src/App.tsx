@@ -1,11 +1,13 @@
-import { fetcherFactory } from "./fetcher";
-import { debounce } from "./debounce";
+import { retriable } from "./fetcher";
+import { debouncible } from "./debounce";
 import { xhrMock } from "./xhrMock";
 import "./styles.css";
 import { useRef } from "react";
+import { abortable } from "./abortable";
 
-const simpleFetcher = fetcherFactory(xhrMock);
-const delayedSimpleFetcher = debounce(simpleFetcher, 5000);
+const simpleFetcher = retriable(xhrMock);
+const delayedSimpleFetcher = debouncible(simpleFetcher, 300);
+const fetcher = abortable(delayedSimpleFetcher);
 
 export default function App() {
   console.log("render app");
@@ -13,13 +15,7 @@ export default function App() {
   const con = useRef<AbortController | undefined>();
 
   const onSimple = async () => {
-    if (con.current) {
-      con.current.abort();
-    }
-
-    con.current = new AbortController();
-
-    delayedSimpleFetcher("simple", 123, con.current.signal)
+    fetcher("simple", 123)
       .then((simpleResponse) => {
         console.log("simpleFetch: ", simpleResponse);
       })

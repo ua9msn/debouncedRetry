@@ -11,7 +11,7 @@ export async function xhrMock(url: string, data: any, signal?: AbortSignal) {
     timeout = setTimeout(() => {
       const rnd = Math.random();
 
-      rnd > 0.8 ? resolve({ status: "ok" }) : reject({ status: "notOk" });
+      rnd > 0.5 ? resolve({ status: "ok" }) : reject({ status: "notOk" });
     }, 1000);
   });
 }

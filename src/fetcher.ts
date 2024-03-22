@@ -4,10 +4,10 @@ interface AsyncFn {
   (...args: any): Promise<any>;
 }
 
-export function fetcherFactory(fn: AsyncFn, numOfRetry = 3) {
+export function retriable(fn: AsyncFn, numOfRetry = 3) {
   let retryCounter = numOfRetry;
 
-  return async function fetcher(...args) {
+  return async function retrier(...args) {
     retryCounter = numOfRetry;
 
     while (true) {
