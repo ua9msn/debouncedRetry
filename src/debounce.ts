@@ -1,18 +1,11 @@
 interface AsyncFn {
-  (arg: any, signal: AbortSignal): Promise<any>;
+  (...args: any): Promise<any>;
 }
 
 export function debounce(callee: AsyncFn, timeoutMs: number) {
   let timeout: ReturnType<typeof setTimeout>;
-  let con: AbortController;
 
   return async function perform(...args) {
-    if (con) {
-      con.abort();
-    }
-
-    con = new AbortController();
-
     console.log("calling perform", timeout);
     clearTimeout(timeout);
     return new Promise((resolve, reject) => {
@@ -20,7 +13,7 @@ export function debounce(callee: AsyncFn, timeoutMs: number) {
         async () => {
           console.log("run", timeout);
           try {
-            const result = await callee(args, con.signal);
+            const result = await callee(...args);
             timeout = 0;
             resolve(result);
           } catch (err) {

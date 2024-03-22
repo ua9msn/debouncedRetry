@@ -1,14 +1,18 @@
 import { xhrMock } from "./xhrMock";
 
-export function fetcherFactory(numOfRetry = 3) {
+interface AsyncFn {
+  (...args: any): Promise<any>;
+}
+
+export function fetcherFactory(fn: AsyncFn, numOfRetry = 3) {
   let retryCounter = numOfRetry;
 
-  return async function fetcher(url: string, signal: AbortSignal) {
+  return async function fetcher(...args) {
     retryCounter = numOfRetry;
 
     while (true) {
       try {
-        return await xhrMock("retryCounter", retryCounter, signal);
+        return await fn(...args);
       } catch (err) {
         retryCounter--;
         console.log("retry# ", retryCounter);

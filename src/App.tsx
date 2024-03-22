@@ -1,15 +1,25 @@
 import { fetcherFactory } from "./fetcher";
 import { debounce } from "./debounce";
+import { xhrMock } from "./xhrMock";
 import "./styles.css";
+import { useRef } from "react";
 
-const simpleFetcher = fetcherFactory();
+const simpleFetcher = fetcherFactory(xhrMock);
 const delayedSimpleFetcher = debounce(simpleFetcher, 5000);
 
 export default function App() {
   console.log("render app");
 
+  const con = useRef<AbortController | undefined>();
+
   const onSimple = async () => {
-    delayedSimpleFetcher("simple")
+    if (con.current) {
+      con.current.abort();
+    }
+
+    con.current = new AbortController();
+
+    delayedSimpleFetcher("simple", 123, con.current.signal)
       .then((simpleResponse) => {
         console.log("simpleFetch: ", simpleResponse);
       })
