@@ -3,7 +3,6 @@ export async function xhrMock(url: string, data: any, signal?: AbortSignal) {
 
   if (signal) {
     signal.addEventListener("abort", () => {
-      console.log("abotring");
       clearTimeout(timeout);
     });
   }
